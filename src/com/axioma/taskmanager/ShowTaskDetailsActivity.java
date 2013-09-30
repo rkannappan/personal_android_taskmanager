@@ -157,7 +157,9 @@ public class ShowTaskDetailsActivity extends Activity {
       protected String doInBackground(Void... params) {
          String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/" + taskType + "/" + taskName + "/";
 
-         new Timer().schedule(new ConsumeProgressMessage(), 2000);
+         new Timer().scheduleAtFixedRate(new ConsumeProgressMessage(), 1000, 1000);
+
+         System.out.println("going to run task");
 
          String json = getJSONFromUrl(url);
          return json;
@@ -175,6 +177,9 @@ public class ShowTaskDetailsActivity extends Activity {
          super.onPostExecute(results);
 
          this.taskRunning = false;
+
+         System.out.println("task done");
+
          //         postProcessing(results);
          this.dialog.dismiss();
       }
@@ -182,6 +187,7 @@ public class ShowTaskDetailsActivity extends Activity {
       private class ConsumeProgressMessage extends TimerTask {
          @Override
          public void run() {
+            System.out.println("going to get progress info " + taskRunning);
             if (!taskRunning) {
                this.cancel();
             }
@@ -189,7 +195,7 @@ public class ShowTaskDetailsActivity extends Activity {
                      PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/progress/" + taskType + "/" + taskName
                               + "/";
             String json = getJSONFromUrl(url);
-            System.out.println(json);
+            System.out.println("progress info is " + json);
             publishProgress(json);
          }
       }
