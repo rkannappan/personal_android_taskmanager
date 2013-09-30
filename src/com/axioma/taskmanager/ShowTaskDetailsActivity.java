@@ -1,6 +1,8 @@
 package com.axioma.taskmanager;
 
 import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,27 +139,59 @@ public class ShowTaskDetailsActivity extends Activity {
       }
    }
 
-   private class RunTaskInBackground extends AsyncTask<Void, Void, String> {
+   private class RunTaskInBackground extends AsyncTask<Void, String, String> {
       private ProgressDialog dialog;
+
+      private boolean taskRunning = false;
 
       @Override
       protected void onPreExecute() {
          this.dialog = new ProgressDialog(ShowTaskDetailsActivity.this);
          this.dialog.setMessage("Running " + taskTypeDesc + " task - " + taskName + "...");
          this.dialog.show();
+
+         this.taskRunning = true;
       }
 
       @Override
       protected String doInBackground(Void... params) {
          String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/" + taskType + "/" + taskName + "/";
-         return getJSONFromUrl(url);
+
+         new Timer().schedule(new ConsumeProgressMessage(), 2000);
+
+         String json = getJSONFromUrl(url);
+         return json;
+      }
+
+      @Override
+      protected void onProgressUpdate(String... progress) {
+         if (this.dialog.isShowing()) {
+            this.dialog.setMessage(progress[0]);
+         }
       }
 
       @Override
       protected void onPostExecute(String results) {
          super.onPostExecute(results);
-         postProcessing(results);
+
+         this.taskRunning = false;
+         //         postProcessing(results);
          this.dialog.dismiss();
+      }
+
+      private class ConsumeProgressMessage extends TimerTask {
+         @Override
+         public void run() {
+            if (!taskRunning) {
+               this.cancel();
+            }
+            String url =
+                     PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/progress/" + taskType + "/" + taskName
+                              + "/";
+            String json = getJSONFromUrl(url);
+            System.out.println(json);
+            publishProgress(json);
+         }
       }
    }
 
