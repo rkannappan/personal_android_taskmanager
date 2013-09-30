@@ -1,0 +1,127 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".TaskFinderActivity" >
+
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:text="@string/task_finder"
+        android:textSize="24dp" />
+
+    <!-- 
+    <TextView
+        android:id="@+id/taskTypeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/taskTypeSpinner"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="0dp"
+        android:text="@string/task_type" />
+    -->
+    
+    <Spinner
+        android:id="@+id/taskTypeSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/titleText"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="20dp"
+        android:spinnerMode="dialog"
+        android:prompt="@string/task_type"
+        android:entries="@array/task_type_array" />
+    
+    <!-- 
+    <TextView
+        android:id="@+id/ownerText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ownerSpinner"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/taskTypeText"
+        android:layout_marginTop="10dp"
+        android:text="@string/owner" />
+        -->
+    
+    <Spinner
+        android:id="@+id/ownerSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/taskTypeSpinner"
+        android:layout_centerVertical="true"
+        android:spinnerMode="dialog"
+        android:layout_marginTop="10dp"
+        android:prompt="@string/owner" />
+    
+    <!-- 
+    <TextView
+        android:id="@+id/portfolioText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/portfolioSpinner"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/ownerText"
+        android:layout_marginTop="10dp"
+        android:text="@string/portfolio" />
+        -->
+    
+    <Spinner
+        android:id="@+id/portfolioSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ownerSpinner"
+        android:layout_centerVertical="true"
+        android:spinnerMode="dialog"
+        android:layout_marginTop="10dp"
+        android:prompt="@string/portfolio" />
+    
+    <Spinner
+        android:id="@+id/benchmarkSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/portfolioSpinner"
+        android:layout_centerVertical="true"
+        android:spinnerMode="dialog"
+        android:layout_marginTop="10dp"
+        android:prompt="@string/benchmark" />
+    
+    <Spinner
+        android:id="@+id/riskmodelSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/benchmarkSpinner"
+        android:layout_centerVertical="true"
+        android:spinnerMode="dialog"
+        android:layout_marginTop="10dp"
+        android:prompt="@string/riskmodel" />
+
+    <EditText
+        android:id="@+id/taskNameText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/riskmodelSpinner" 
+        android:layout_marginTop="10dp"
+		android:hint="@string/feedback_taskname"
+     />
+    
+    <Button  
+        android:id="@+id/FindTasks"  
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"  
+        android:text="@string/findtasks"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/taskNameText"   
+        android:onClick="findTasks" /> 
+
+</RelativeLayout>

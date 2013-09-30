@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Axioma Task Manager</string>
+    <string name="action_settings">Settings</string>
+    <string name="task_finder">Enter Task Details</string>
+    <string name="task_type">Pick Task Type</string>
+    <string name="owner">Pick Owner</string>
+    <string name="portfolio">Pick Portfolio</string>
+    <string name="benchmark">Pick Benchmark</string>
+    <string name="riskmodel">Pick Risk Model</string>
+    <string name="feedback_tasktype">Any Task Type</string>
+    <string name="feedback_owner">Any Owner</string>
+    <string name="feedback_portfolio">Any Portfolio</string>
+    <string name="feedback_benchmark">Any Benchmark</string>
+    <string name="feedback_riskmodel">Any Risk Model</string>
+    <string name="feedback_taskname">Any Task Name</string>
+    <string name="findtasks">Find Matching Tasks</string>
+    <string name="tasks">Tasks</string>
+    <string name="ra_tasks">Risk Analysis Tasks</string>
+    <string name="fbpa_tasks">Factor PA Tasks</string>
+    <string name="rbpa_tasks">Returns PA Tasks</string>
+    <string name="report_tasks">Report Tasks</string>
+    <string name="rmm_tasks">Risk Model Machine Tasks</string>
+    <string name="ax_import_tasks">Axioma Data Import Tasks</string>
+    <string name="port_import_tasks">Portfolio Data Import Tasks</string>
+    <string name="att_import_tasks">Attribute Data Import Tasks</string>
+    <string name="comp_import_tasks">Composite Data Import Tasks</string>
+    <string name="classif_import_tasks">Classification Data Import Tasks</string>
+    <string name="task_details">Task Details</string>
+    <string name="run">Run</string>
+    
+	<string-array name="task_type_array">
+	    <item>Any Task Type</item>
+        <item>Import Axioma Data</item>
+        <item>Import Portfolio Data</item>
+        <item>Import Attribute Data</item>
+        <item>Import Composite Data</item>
+        <item>Factor Performance Attribution</item>
+        <item>Returns Performance Attribution</item>
+        <item>Risk Model Machine</item>
+        <item>Risk Analysis</item>
+    </string-array>    
+
+</resources>

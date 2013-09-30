@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory 
+        android:title="Web Service Details"
+        android:key="web_service">
+        
+        <EditTextPreference
+            android:key="host_name"
+            android:title="Host Name" 
+            android:summary="Host name where web service is running"
+            android:dialogTitle="Host Name"
+            android:dialogMessage="Please enter host name"    
+            android:defaultValue="http://localhost" />
+        
+        <EditTextPreference
+            android:key="port_number"
+            android:title="Port Number" 
+            android:summary="Port number where web service is running"
+            android:dialogTitle="Port Number"
+            android:dialogMessage="Please enter port number"    
+            android:defaultValue="8080" />
+        
+        <EditTextPreference
+            android:key="ws_context"
+            android:title="Context" 
+            android:summary="Context name of web service"
+            android:dialogTitle="Context"
+            android:dialogMessage="Please enter context"    
+            android:defaultValue="axioma-websrv" />
+                    
+    </PreferenceCategory>
+
+    <PreferenceCategory 
+        android:title="User Details"
+        android:key="user">
+
+        <EditTextPreference
+            android:key="app_user_name"
+            android:title="Application User Name" 
+            android:summary="Application user name to login to web service"
+            android:dialogTitle="Application User Name"
+            android:dialogMessage="Please enter application  user name"    
+            android:defaultValue="axioma" />
+        
+        <EditTextPreference
+            android:key="app_user_password"
+            android:title="Application User Password" 
+            android:summary="Application user password to login to web service"
+            android:dialogTitle="Application User Password"
+            android:dialogMessage="Please enter application  user password"
+            android:defaultValue="axioma"    
+            android:inputType="textPassword" />
+
+    </PreferenceCategory>
+    
+</PreferenceScreen>
