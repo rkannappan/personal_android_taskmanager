@@ -147,6 +147,7 @@ public class ShowTaskDetailsActivity extends Activity {
       @Override
       protected void onPreExecute() {
          this.dialog = new ProgressDialog(ShowTaskDetailsActivity.this);
+
          this.dialog.setMessage("Running " + taskTypeDesc + " task - " + taskName + "...");
          this.dialog.show();
 
@@ -155,14 +156,20 @@ public class ShowTaskDetailsActivity extends Activity {
 
       @Override
       protected String doInBackground(Void... params) {
-         String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/" + taskType + "/" + taskName + "/";
+         this.flushProgressMessages();
 
-         new Timer().scheduleAtFixedRate(new ConsumeProgressMessage(), 1000, 1000);
+         this.consumeProgressMessages();
 
          System.out.println("going to run task");
 
-         String json = getJSONFromUrl(url);
-         return json;
+         String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/" + taskType + "/" + taskName + "/";
+         String status = getJSONFromUrl(url);
+
+         this.flushProgressMessages();
+
+         publishProgress("Task finished with status " + status);
+
+         return status;
       }
 
       @Override
@@ -182,6 +189,15 @@ public class ShowTaskDetailsActivity extends Activity {
 
          //         postProcessing(results);
          this.dialog.dismiss();
+      }
+
+      private void flushProgressMessages() {
+         String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/flush/" + taskType + "/" + taskName + "/";
+         getJSONFromUrl(url);
+      }
+
+      private void consumeProgressMessages() {
+         new Timer().scheduleAtFixedRate(new ConsumeProgressMessage(), 1000, 1000);
       }
 
       private class ConsumeProgressMessage extends TimerTask {
