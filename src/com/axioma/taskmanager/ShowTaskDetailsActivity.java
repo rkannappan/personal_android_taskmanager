@@ -143,7 +143,7 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
          Notification noti =
                   new Notification.Builder(ShowTaskDetailsActivity.this)
                            .setContentTitle(taskTypeDesc + " task " + taskName + " finished with status " + results)
-                           .setContentText("Task Status").setSmallIcon(R.drawable.ic_launcher).build();
+                           .setContentText("Task Status").setSmallIcon(R.drawable.axioma_launcher).build();
 
          NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
