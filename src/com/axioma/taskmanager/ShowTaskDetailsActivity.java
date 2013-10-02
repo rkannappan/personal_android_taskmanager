@@ -5,14 +5,20 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.axioma.taskmanager.async.AsyncCallback;
 import com.axioma.taskmanager.async.GetTaskDetailsInBackground;
@@ -60,7 +66,8 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
       // Handle presses on the action bar items
       switch (item.getItemId()) {
          case R.id.action_run:
-            new RunTaskInBackground(ShowTaskDetailsActivity.this, this.taskName, this.taskType, this.taskTypeDesc).execute();
+            new RunTaskInBackground(ShowTaskDetailsActivity.this, this.taskName, this.taskType, this.taskTypeDesc,
+                     new RunTaskCallback()).execute();
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -111,5 +118,39 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
       ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, paramValues);
 
       gridView.setAdapter(adapter);
+   }
+
+   private class RunTaskCallback implements AsyncCallback {
+
+      @Override
+      public void postProcessing(String results) {
+         Toast.makeText(ShowTaskDetailsActivity.this, "Task finished with status " + results, Toast.LENGTH_SHORT).show();
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            this.showNotification(results);
+         }
+      }
+
+      @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+      private void showNotification(final String results) {
+         // Prepare intent which is triggered if the
+         // notification is selected
+
+         //         Intent intent = new Intent(ShowTaskDetailsActivity.this, ShowTaskDetailsActivity.class);
+         //         PendingIntent pIntent = PendingIntent.getActivity(ShowTaskDetailsActivity.this, 0, intent, 0);
+
+         // Build notification
+         Notification noti =
+                  new Notification.Builder(ShowTaskDetailsActivity.this)
+                           .setContentTitle(taskTypeDesc + " task " + taskName + " finished with status " + results)
+                           .setContentText("Task Status").setSmallIcon(R.drawable.ic_launcher).build();
+
+         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+         // Hide the notification after its selected
+         noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+         notificationManager.notify(0, noti);
+      }
    }
 }

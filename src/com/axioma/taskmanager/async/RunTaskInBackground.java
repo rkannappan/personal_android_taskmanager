@@ -6,7 +6,6 @@ import java.util.TimerTask;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.axioma.taskmanager.util.PreferenceUtil;
 import com.axioma.taskmanager.util.RestClientUtil;
@@ -23,12 +22,15 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
    private final String taskName;
    private final String taskType;
    private final String taskTypeDesc;
+   private final AsyncCallback callback;
 
-   public RunTaskInBackground(final Context context, final String taskName, final String taskType, final String taskTypeDesc) {
+   public RunTaskInBackground(final Context context, final String taskName, final String taskType, final String taskTypeDesc,
+            final AsyncCallback callback) {
       this.context = context;
       this.taskName = taskName;
       this.taskType = taskType;
       this.taskTypeDesc = taskTypeDesc;
+      this.callback = callback;
    }
 
    @Override
@@ -52,8 +54,6 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
 
       this.flushProgressMessages();
       
-      Toast.makeText(this.context, "Task finished with status " + status, Toast.LENGTH_SHORT).show();
-
       return status;
    }
 
@@ -69,10 +69,9 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
       super.onPostExecute(results);
 
       this.taskRunning = false;
-
-      // Nothing to postProcess here - Maybe, send a mobile notification
-      //         postProcessing(results);
       this.dialog.dismiss();
+
+      this.callback.postProcessing(results);
    }
 
    private void flushProgressMessages() {
