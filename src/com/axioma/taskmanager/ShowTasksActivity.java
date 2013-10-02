@@ -9,7 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -25,8 +24,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.axioma.taskmanager.util.PreferenceUtil;
-import com.axioma.taskmanager.util.RestClientUtil;
+import com.axioma.taskmanager.async.AsyncCallback;
+import com.axioma.taskmanager.async.GetMatchingTasksInBackground;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.LinkedListMultimap;
@@ -36,7 +35,7 @@ import com.google.common.collect.Multimap;
 /**
  * @author rkannappan
  */
-public class ShowTasksActivity extends FragmentActivity {
+public class ShowTasksActivity extends FragmentActivity implements AsyncCallback {
 
    public final static String SELECTED_TASK_TYPE = "com.axioma.showtasksactivity.selected_task_type";
    public final static String SELECTED_TASK_NAME = "com.axioma.showtasksactivity.selected_task_name";
@@ -90,77 +89,13 @@ public class ShowTasksActivity extends FragmentActivity {
       String taskName = intent.getStringExtra(TaskFinderActivity.SELECTED_TASK_NAME);
       System.out.println(taskName);
 
-      String queryParams = getQueryParams(taskType, owner, portfolio, benchmark, riskmodel, taskName);
-
-      String fullTasksUrl = PreferenceUtil.getBaseWSURL(this) + "tasks" + queryParams;
-      System.out.println(fullTasksUrl);
-
-      new GetMatchingTasksInBackground(fullTasksUrl).execute();
+      new GetMatchingTasksInBackground(ShowTasksActivity.this, taskType, owner, portfolio, benchmark, riskmodel, taskName,
+               this.taskTypeDescToTaskTypeMap, this)
+               .execute();
    }
 
-   private String getQueryParams(final String taskType, final String owner, final String portfolio, final String benchmark,
-            final String riskmodel, final String taskName) {
-      List<Parameter> params = new ArrayList<Parameter>();
-
-      if (!this.getString(R.string.feedback_tasktype).equals(taskType)) {
-         params.add(new Parameter("taskType", this.taskTypeDescToTaskTypeMap.get(taskType)));
-      }
-      if (!this.getString(R.string.feedback_owner).equals(owner)) {
-         params.add(new Parameter("owner", owner));
-      }
-      if (!this.getString(R.string.feedback_portfolio).equals(portfolio)) {
-         params.add(new Parameter("portfolio", portfolio));
-      }
-      if (!this.getString(R.string.feedback_benchmark).equals(benchmark)) {
-         params.add(new Parameter("benchmark", benchmark));
-      }
-      if (!this.getString(R.string.feedback_riskmodel).equals(riskmodel)) {
-         params.add(new Parameter("riskmodel", riskmodel));
-      }
-      if (!(taskName == null || taskName.equals(""))) {
-         params.add(new Parameter("taskName", taskName));
-      }
-
-      StringBuilder queryParams = new StringBuilder();
-      if (params.size() > 0) {
-         queryParams.append("?");
-      }
-
-      // Note that this is easy to do with Google guava joiner, but we are not using that dependency here. 
-      for (Parameter param : params) {
-         queryParams.append(param.name).append('=').append(param.value).append('&');
-      }
-
-      // Remove final &
-      if (queryParams.length() > 0) {
-         queryParams.setLength(queryParams.length() - 1);
-      }
-
-      return queryParams.toString();
-   }
-
-   private class GetMatchingTasksInBackground extends AsyncTask<Void, Void, String> {
-      private final String url;
-
-      private GetMatchingTasksInBackground(final String url) {
-         this.url = url;
-      }
-
-      @Override
-      protected String doInBackground(Void... params) {
-         return new RestClientUtil().getJSONFromUrl(url, PreferenceUtil.getAppUserName(getApplicationContext()),
-                  PreferenceUtil.getAppPassword(getApplicationContext()));
-      }
-
-      @Override
-      protected void onPostExecute(String results) {
-         super.onPostExecute(results);
-         System.out.println(results);
-         postProcessing(results);
-      }
-   }
-
-   private void postProcessing(String results) {
+   @Override
+   public void postProcessing(String results) {
       // Create the adapter that will return a fragment for each of the three
       // primary sections of the app.
       mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), results);
@@ -202,7 +137,6 @@ public class ShowTasksActivity extends FragmentActivity {
          Bundle args = new Bundle();
          args.putString(TasksSectionFragment.TASK_TYPE, taskType);
          args.putString(TasksSectionFragment.TASK_TYPE_DESC, taskTypeDescToTaskTypeMap.inverse().get(taskType));
-         System.out.println("tt desc " + taskTypeDescToTaskTypeMap.inverse().get(taskType));
          args.putStringArrayList(TasksSectionFragment.TASK_NAMES, new ArrayList<String>(tasks));
          fragment.setArguments(args);
          return fragment;
@@ -210,7 +144,7 @@ public class ShowTasksActivity extends FragmentActivity {
 
       @Override
       public int getCount() {
-         // Show 3 total pages.
+         // Show 10 pages.
          return 10;
       }
 
@@ -322,21 +256,6 @@ public class ShowTasksActivity extends FragmentActivity {
          intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
          intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
          startActivity(intent);
-      }
-   }
-
-   private class Parameter {
-      String name;
-      String value;
-
-      Parameter(final String paramName, final String paramValue) {
-         this.name = paramName;
-         this.value = paramValue;
-      }
-
-      @Override
-      public String toString() {
-         return this.name + " = " + this.value;
       }
    }
 }

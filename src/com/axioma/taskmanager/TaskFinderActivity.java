@@ -122,8 +122,7 @@ public class TaskFinderActivity extends Activity implements OnSharedPreferenceCh
 
       @Override
       protected String doInBackground(Void... params) {
-         return new RestClientUtil().getJSONFromUrl(url, PreferenceUtil.getAppUserName(getApplicationContext()),
-                  PreferenceUtil.getAppPassword(getApplicationContext()));
+         return RestClientUtil.getJSONFromUrl(url, TaskFinderActivity.this);
       }
 
       @Override

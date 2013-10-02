@@ -1,16 +1,12 @@
 package com.axioma.taskmanager;
 
 import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,13 +14,14 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
-import com.axioma.taskmanager.util.PreferenceUtil;
-import com.axioma.taskmanager.util.RestClientUtil;
+import com.axioma.taskmanager.async.AsyncCallback;
+import com.axioma.taskmanager.async.GetTaskDetailsInBackground;
+import com.axioma.taskmanager.async.RunTaskInBackground;
 
 /**
  * @author rkannappan
  */
-public class ShowTaskDetailsActivity extends Activity {
+public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
 
    private String taskName = null;
    private String taskType = null;
@@ -48,7 +45,7 @@ public class ShowTaskDetailsActivity extends Activity {
       System.out.println("name in intent " + taskName);
       System.out.println("type desc in intent " + taskTypeDesc);
 
-      new GetTaskDetailsInBackground().execute();
+      new GetTaskDetailsInBackground(ShowTaskDetailsActivity.this, taskName, taskType, taskTypeDesc, this).execute();
    }
    
    @Override
@@ -63,14 +60,15 @@ public class ShowTaskDetailsActivity extends Activity {
       // Handle presses on the action bar items
       switch (item.getItemId()) {
          case R.id.action_run:
-            new RunTaskInBackground().execute();
+            new RunTaskInBackground(ShowTaskDetailsActivity.this, this.taskName, this.taskType, this.taskTypeDesc).execute();
             return true;
          default:
             return super.onOptionsItemSelected(item);
       }
    }
 
-   private void postProcessing(String results) {
+   @Override
+   public void postProcessing(String results) {
       String[] paramValues = null;
 
       try {
@@ -113,112 +111,5 @@ public class ShowTaskDetailsActivity extends Activity {
       ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, paramValues);
 
       gridView.setAdapter(adapter);
-   }
-
-   private class GetTaskDetailsInBackground extends AsyncTask<Void, Void, String> {
-      private ProgressDialog dialog;
-
-      @Override
-      protected void onPreExecute() {
-         this.dialog = new ProgressDialog(ShowTaskDetailsActivity.this);
-         this.dialog.setMessage("Getting task details for " + taskTypeDesc + " task - " + taskName + "...");
-         this.dialog.show();
-      }
-
-      @Override
-      protected String doInBackground(Void... params) {
-         String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/" + taskType + "/" + taskName + "/";
-         return getJSONFromUrl(url);
-      }
-
-      @Override
-      protected void onPostExecute(String results) {
-         super.onPostExecute(results);
-         postProcessing(results);
-         this.dialog.dismiss();
-      }
-   }
-
-   private class RunTaskInBackground extends AsyncTask<Void, String, String> {
-      private ProgressDialog dialog;
-
-      private boolean taskRunning = false;
-
-      @Override
-      protected void onPreExecute() {
-         this.dialog = new ProgressDialog(ShowTaskDetailsActivity.this);
-
-         this.dialog.setMessage("Running " + taskTypeDesc + " task - " + taskName + "...");
-         this.dialog.show();
-
-         this.taskRunning = true;
-      }
-
-      @Override
-      protected String doInBackground(Void... params) {
-         this.flushProgressMessages();
-
-         this.consumeProgressMessages();
-
-         System.out.println("going to run task");
-
-         String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/" + taskType + "/" + taskName + "/";
-         String status = getJSONFromUrl(url);
-
-         this.flushProgressMessages();
-
-         publishProgress("Task finished with status " + status);
-
-         return status;
-      }
-
-      @Override
-      protected void onProgressUpdate(String... progress) {
-         if (this.dialog.isShowing()) {
-            this.dialog.setMessage(progress[0]);
-         }
-      }
-
-      @Override
-      protected void onPostExecute(String results) {
-         super.onPostExecute(results);
-
-         this.taskRunning = false;
-
-         System.out.println("task done");
-
-         //         postProcessing(results);
-         this.dialog.dismiss();
-      }
-
-      private void flushProgressMessages() {
-         String url = PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/flush/" + taskType + "/" + taskName + "/";
-         getJSONFromUrl(url);
-      }
-
-      private void consumeProgressMessages() {
-         new Timer().scheduleAtFixedRate(new ConsumeProgressMessage(), 1000, 1000);
-      }
-
-      private class ConsumeProgressMessage extends TimerTask {
-         @Override
-         public void run() {
-            System.out.println("going to get progress info " + taskRunning);
-            if (!taskRunning) {
-               this.cancel();
-            }
-            String url =
-                     PreferenceUtil.getBaseWSURL(getApplicationContext()) + "tasks/run/progress/" + taskType + "/" + taskName
-                              + "/";
-            String json = getJSONFromUrl(url);
-            System.out.println("progress info is " + json);
-            publishProgress(json);
-         }
-      }
-   }
-
-   private String getJSONFromUrl(final String url) {
-      return new RestClientUtil().getJSONFromUrl(url, PreferenceUtil.getAppUserName(getApplicationContext()),
-               PreferenceUtil.getAppPassword(getApplicationContext()));
    }
 }

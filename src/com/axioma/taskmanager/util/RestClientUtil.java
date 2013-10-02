@@ -11,6 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import android.content.Context;
 import android.util.Base64;
 
 /**
@@ -18,7 +19,12 @@ import android.util.Base64;
  */
 public class RestClientUtil {
 
-   public String getJSONFromUrl(String url, String userName, String password) {
+   public static String getJSONFromUrl(final String url, Context context) {
+      return new RestClientUtil().getJSONFromUrl(url, PreferenceUtil.getAppUserName(context),
+               PreferenceUtil.getAppPassword(context));
+   }
+
+   private String getJSONFromUrl(String url, String userName, String password) {
       String encodedURL = url.replaceAll(" ", "%20");
 
       HttpClient httpClient = new DefaultHttpClient();
