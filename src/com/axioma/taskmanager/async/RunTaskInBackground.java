@@ -6,6 +6,7 @@ import java.util.TimerTask;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.axioma.taskmanager.util.PreferenceUtil;
 import com.axioma.taskmanager.util.RestClientUtil;
@@ -50,8 +51,8 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
       String status = RestClientUtil.getJSONFromUrl(url, this.context);
 
       this.flushProgressMessages();
-
-      publishProgress("Task finished with status " + status);
+      
+      Toast.makeText(this.context, "Task finished with status " + status, Toast.LENGTH_SHORT).show();
 
       return status;
    }
@@ -91,7 +92,6 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
          }
          String url = PreferenceUtil.getBaseWSURL(context) + "tasks/run/progress/" + taskType + "/" + taskName + "/";
          String json = RestClientUtil.getJSONFromUrl(url, context);
-         System.out.println("progress info is " + json);
          if (json != null && !json.trim().equals("")) {
             publishProgress(json);
          }
