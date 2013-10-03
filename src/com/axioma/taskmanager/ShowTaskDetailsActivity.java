@@ -293,6 +293,7 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
       this.paramNameToDisplayNameMap.put("riskModelType", "Risk Model Type");
       this.paramNameToDisplayNameMap.put("date", "Date");
       this.paramNameToDisplayNameMap.put("dataName", "Data Name");
+      this.paramNameToDisplayNameMap.put("dataDescription", "Data Description");
       this.paramNameToDisplayNameMap.put("importFileType", "File Type");
       this.paramNameToDisplayNameMap.put("skipMarketAssetLiveCheck", "Skip Market Asset Live Check");
    }
