@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.axioma.taskmanager.async.AsyncCallback;
 import com.axioma.taskmanager.async.GetTaskDetailsInBackground;
 import com.axioma.taskmanager.async.RunTaskInBackground;
+import com.axioma.taskmanager.util.IdentityName;
 
 /**
  * @author rkannappan
@@ -30,6 +31,7 @@ import com.axioma.taskmanager.async.RunTaskInBackground;
 public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
 
    private String taskName = null;
+   private String taskRawName = null;
    private String taskType = null;
    private String taskTypeDesc = null;
 
@@ -40,18 +42,21 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
       // Get the message from the intent
       Intent intent = getIntent();
       String taskType = intent.getStringExtra(ShowTasksActivity.SELECTED_TASK_TYPE);
-      String taskName = intent.getStringExtra(ShowTasksActivity.SELECTED_TASK_NAME);
       String taskTypeDesc = intent.getStringExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC);
+      String taskName = intent.getStringExtra(ShowTasksActivity.SELECTED_TASK_NAME);
+      String taskRawName = intent.getStringExtra(ShowTasksActivity.SELECTED_TASK_RAW_NAME);
 
       this.taskType = taskType;
-      this.taskName = taskName;
       this.taskTypeDesc = taskTypeDesc;
+      this.taskName = taskName;
+      this.taskRawName = taskRawName;
 
       System.out.println("type in intent " + taskType);
       System.out.println("name in intent " + taskName);
+      System.out.println("raw name in intent " + taskRawName);
       System.out.println("type desc in intent " + taskTypeDesc);
 
-      new GetTaskDetailsInBackground(ShowTaskDetailsActivity.this, taskName, taskType, taskTypeDesc, this).execute();
+      new GetTaskDetailsInBackground(ShowTaskDetailsActivity.this, taskName, taskRawName, taskType, taskTypeDesc, this).execute();
    }
    
    @Override
@@ -66,7 +71,8 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
       // Handle presses on the action bar items
       switch (item.getItemId()) {
          case R.id.action_run:
-            new RunTaskInBackground(ShowTaskDetailsActivity.this, this.taskName, this.taskType, this.taskTypeDesc,
+            new RunTaskInBackground(ShowTaskDetailsActivity.this, this.taskName, this.taskRawName, this.taskType,
+                     this.taskTypeDesc,
                      new RunTaskCallback()).execute();
             return true;
          default:
@@ -90,7 +96,7 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
          int i = 0;
 
          paramValues[i++] = "Task Name";
-         paramValues[i++] = taskName;
+         paramValues[i++] = IdentityName.valueOf(taskName).getName();
 
          paramValues[i++] = "Task Type";
          paramValues[i++] = taskTypeDesc;
@@ -101,11 +107,10 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
             System.out.println(paramName);
             paramValues[i++] = paramName;
 
-
             String paramValue = values.getString(paramName);
             System.out.println(paramValue);
 
-            paramValues[i++] = paramValue;
+            paramValues[i++] = this.getCleansedParamValue(paramValue);
          }
 
          setContentView(R.layout.activity_show_task_details);
@@ -143,7 +148,7 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
          Notification noti =
                   new Notification.Builder(ShowTaskDetailsActivity.this)
                            .setContentTitle(taskTypeDesc + " task " + taskName + " finished with status " + results)
-                           .setContentText("Task Status").setSmallIcon(R.drawable.axioma_launcher).build();
+                           .setContentText(results).setSmallIcon(R.drawable.axioma_launcher).build();
 
          NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -151,6 +156,16 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
          noti.flags |= Notification.FLAG_AUTO_CANCEL;
 
          notificationManager.notify(0, noti);
+      }
+   }
+
+   // Returns double values as it is and removes prefixes from others
+   private String getCleansedParamValue(final String paramValue) {
+      try {
+         Double.valueOf(paramValue);
+         return paramValue;
+      } catch (NumberFormatException ex) {
+         return IdentityName.valueOf(paramValue).getName();
       }
    }
 }

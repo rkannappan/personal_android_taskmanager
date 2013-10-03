@@ -2,6 +2,7 @@ package com.axioma.taskmanager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,8 +22,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.axioma.taskmanager.util.IdentityName;
 import com.axioma.taskmanager.util.PreferenceUtil;
 import com.axioma.taskmanager.util.RestClientUtil;
+import com.google.common.collect.Maps;
 
 /**
  * @author rkannappan
@@ -49,6 +52,8 @@ public class TaskFinderActivity extends Activity implements OnSharedPreferenceCh
    public final static String DEFAULT_APP_USER_PASSWORD = "axioma";
 
    private boolean preferencesChanged = false;
+
+   private final Map<String, String> dataElementsCleansedNameToRawNameMap = Maps.newHashMap();
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -142,8 +147,10 @@ public class TaskFinderActivity extends Activity implements OnSharedPreferenceCh
          JSONArray entries = new JSONArray(results);
 
          for (int i = 0; i < entries.length(); i++) {
-            String entry = (String) entries.get(i);
-            names.add(entry);
+            String rawName = (String) entries.get(i);
+            String cleansedName = IdentityName.valueOf(rawName).getName();
+            this.dataElementsCleansedNameToRawNameMap.put(cleansedName, rawName);
+            names.add(cleansedName);
          }
       } catch (JSONException e) {
          Log.e("JSON Parser", "Error parsing data " + e.toString());
@@ -176,9 +183,9 @@ public class TaskFinderActivity extends Activity implements OnSharedPreferenceCh
       Intent intent = new Intent(getApplicationContext(), ShowTasksActivity.class);
       intent.putExtra(TaskFinderActivity.SELECTED_TASK_TYPE, taskType);
       intent.putExtra(TaskFinderActivity.SELECTED_OWNER, owner);
-      intent.putExtra(TaskFinderActivity.SELECTED_PORTFOLIO, portfolio);
-      intent.putExtra(TaskFinderActivity.SELECTED_BENCHMARK, benchmark);
-      intent.putExtra(TaskFinderActivity.SELECTED_RISKMODEL, riskmodel);
+      intent.putExtra(TaskFinderActivity.SELECTED_PORTFOLIO, this.dataElementsCleansedNameToRawNameMap.get(portfolio));
+      intent.putExtra(TaskFinderActivity.SELECTED_BENCHMARK, this.dataElementsCleansedNameToRawNameMap.get(benchmark));
+      intent.putExtra(TaskFinderActivity.SELECTED_RISKMODEL, this.dataElementsCleansedNameToRawNameMap.get(riskmodel));
       intent.putExtra(TaskFinderActivity.SELECTED_TASK_NAME, taskName);
       startActivity(intent);
    }

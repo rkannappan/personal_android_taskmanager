@@ -53,13 +53,13 @@ public class GetMatchingTasksInBackground extends AsyncTask<Void, Void, String> 
       if (!this.context.getString(R.string.feedback_owner).equals(owner)) {
          params.add(new Parameter("owner", owner));
       }
-      if (!this.context.getString(R.string.feedback_portfolio).equals(portfolio)) {
+      if (portfolio != null && !this.context.getString(R.string.feedback_portfolio).equals(portfolio)) {
          params.add(new Parameter("portfolio", portfolio));
       }
-      if (!this.context.getString(R.string.feedback_benchmark).equals(benchmark)) {
+      if (benchmark != null && !this.context.getString(R.string.feedback_benchmark).equals(benchmark)) {
          params.add(new Parameter("benchmark", benchmark));
       }
-      if (!this.context.getString(R.string.feedback_riskmodel).equals(riskmodel)) {
+      if (riskmodel != null && !this.context.getString(R.string.feedback_riskmodel).equals(riskmodel)) {
          params.add(new Parameter("riskmodel", riskmodel));
       }
       if (!(taskName == null || taskName.equals(""))) {

@@ -20,14 +20,17 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
 
    private final Context context;
    private final String taskName;
+   private final String taskRawName;
    private final String taskType;
    private final String taskTypeDesc;
    private final AsyncCallback callback;
 
-   public RunTaskInBackground(final Context context, final String taskName, final String taskType, final String taskTypeDesc,
+   public RunTaskInBackground(final Context context, final String taskName, final String taskRawName, final String taskType,
+            final String taskTypeDesc,
             final AsyncCallback callback) {
       this.context = context;
       this.taskName = taskName;
+      this.taskRawName = taskRawName;
       this.taskType = taskType;
       this.taskTypeDesc = taskTypeDesc;
       this.callback = callback;
@@ -49,7 +52,7 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
 
       this.consumeProgressMessages();
 
-      String url = PreferenceUtil.getBaseWSURL(this.context) + "tasks/run/" + taskType + "/" + taskName + "/";
+      String url = PreferenceUtil.getBaseWSURL(this.context) + "tasks/run/" + taskType + "/" + taskRawName + "/";
       String status = RestClientUtil.getJSONFromUrl(url, this.context);
 
       this.flushProgressMessages();
@@ -75,7 +78,7 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
    }
 
    private void flushProgressMessages() {
-      String url = PreferenceUtil.getBaseWSURL(this.context) + "tasks/run/flush/" + taskType + "/" + taskName + "/";
+      String url = PreferenceUtil.getBaseWSURL(this.context) + "tasks/run/flush/" + taskType + "/" + taskRawName + "/";
       RestClientUtil.getJSONFromUrl(url, this.context);
    }
 
@@ -89,7 +92,7 @@ public class RunTaskInBackground extends AsyncTask<Void, String, String> {
          if (!taskRunning) {
             this.cancel();
          }
-         String url = PreferenceUtil.getBaseWSURL(context) + "tasks/run/progress/" + taskType + "/" + taskName + "/";
+         String url = PreferenceUtil.getBaseWSURL(context) + "tasks/run/progress/" + taskType + "/" + taskRawName + "/";
          String json = RestClientUtil.getJSONFromUrl(url, context);
          if (json != null && !json.trim().equals("")) {
             publishProgress(json);

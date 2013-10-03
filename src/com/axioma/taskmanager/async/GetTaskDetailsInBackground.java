@@ -15,14 +15,17 @@ public class GetTaskDetailsInBackground extends AsyncTask<Void, Void, String> {
 
    private final Context context;
    private final String taskName;
+   private final String taskRawName;
    private final String taskType;
    private final String taskTypeDesc;
    private final AsyncCallback callback;
 
-   public GetTaskDetailsInBackground(final Context context, final String taskName, final String taskType,
+   public GetTaskDetailsInBackground(final Context context, final String taskName, final String taskRawName,
+            final String taskType,
             final String taskTypeDesc, final AsyncCallback callback) {
       this.context = context;
       this.taskName = taskName;
+      this.taskRawName = taskRawName;
       this.taskType = taskType;
       this.taskTypeDesc = taskTypeDesc;
       this.callback = callback;
@@ -37,7 +40,7 @@ public class GetTaskDetailsInBackground extends AsyncTask<Void, Void, String> {
 
    @Override
    protected String doInBackground(Void... params) {
-      String url = PreferenceUtil.getBaseWSURL(this.context) + "tasks/" + taskType + "/" + taskName + "/";
+      String url = PreferenceUtil.getBaseWSURL(this.context) + "tasks/" + taskType + "/" + taskRawName + "/";
       return RestClientUtil.getJSONFromUrl(url, this.context);
    }
 

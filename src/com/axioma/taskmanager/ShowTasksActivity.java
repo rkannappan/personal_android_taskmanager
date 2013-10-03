@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,10 +27,12 @@ import android.widget.ListView;
 
 import com.axioma.taskmanager.async.AsyncCallback;
 import com.axioma.taskmanager.async.GetMatchingTasksInBackground;
+import com.axioma.taskmanager.util.IdentityName;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 /**
@@ -38,8 +41,9 @@ import com.google.common.collect.Multimap;
 public class ShowTasksActivity extends FragmentActivity implements AsyncCallback {
 
    public final static String SELECTED_TASK_TYPE = "com.axioma.showtasksactivity.selected_task_type";
-   public final static String SELECTED_TASK_NAME = "com.axioma.showtasksactivity.selected_task_name";
    public final static String SELECTED_TASK_TYPE_DESC = "com.axioma.showtasksactivity.selected_task_type_desc";
+   public final static String SELECTED_TASK_NAME = "com.axioma.showtasksactivity.selected_task_name";
+   public final static String SELECTED_TASK_RAW_NAME = "com.axioma.showtasksactivity.selected_task_raw_name";
 
    /**
     * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -52,6 +56,8 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
    SectionsPagerAdapter mSectionsPagerAdapter;
 
    BiMap<String, String> taskTypeDescToTaskTypeMap = HashBiMap.create();
+
+   private final Map<String, String> tasksCleansedNameToRawNameMap = Maps.newHashMap();
 
    /**
     * The {@link ViewPager} that will host the section contents.
@@ -81,11 +87,11 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
       String owner = intent.getStringExtra(TaskFinderActivity.SELECTED_OWNER);
       System.out.println(owner);
       String portfolio = intent.getStringExtra(TaskFinderActivity.SELECTED_PORTFOLIO);
-      System.out.println(portfolio);
+      System.out.println(portfolio == null ? "" : portfolio);
       String benchmark = intent.getStringExtra(TaskFinderActivity.SELECTED_BENCHMARK);
-      System.out.println(benchmark);
+      System.out.println(benchmark == null ? "" : benchmark);
       String riskmodel = intent.getStringExtra(TaskFinderActivity.SELECTED_RISKMODEL);
-      System.out.println(riskmodel);
+      System.out.println(riskmodel == null ? "" : riskmodel);
       String taskName = intent.getStringExtra(TaskFinderActivity.SELECTED_TASK_NAME);
       System.out.println(taskName);
 
@@ -110,7 +116,7 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
     * one of the sections/tabs/pages.
     */
    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-      private final Multimap<String, String> taskTypeToNameMap = LinkedListMultimap.create();
+      private final Multimap<String, String> taskTypeToNameMap = ArrayListMultimap.create();
 
       public SectionsPagerAdapter(FragmentManager fm, String results) {
          super(fm);
@@ -120,7 +126,11 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
 
             for (int i = 0; i < entries.length(); i++) {
                JSONArray entry = (JSONArray) entries.get(i);
-               taskTypeToNameMap.put(entry.getString(0), entry.getString(1));
+               final String taskType = entry.getString(0);
+               final String rawName = entry.getString(1);
+               String cleansedName = IdentityName.valueOf(rawName).getName();
+               tasksCleansedNameToRawNameMap.put(cleansedName, rawName);
+               taskTypeToNameMap.put(taskType, cleansedName);
             }
          } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
@@ -138,6 +148,7 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
          args.putString(TasksSectionFragment.TASK_TYPE, taskType);
          args.putString(TasksSectionFragment.TASK_TYPE_DESC, taskTypeDescToTaskTypeMap.inverse().get(taskType));
          args.putStringArrayList(TasksSectionFragment.TASK_NAMES, new ArrayList<String>(tasks));
+         args.putStringArrayList(TasksSectionFragment.TASK_RAW_NAMES, new ArrayList<String>(this.getRawTaskNames(tasks)));
          fragment.setArguments(args);
          return fragment;
       }
@@ -208,14 +219,25 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
 
          return null;
       }
+
+      private List<String> getRawTaskNames(final Collection<String> cleansedTaskNames) {
+         List<String> rawTaskNames = Lists.newArrayList();
+         for (String cleansedName : cleansedTaskNames) {
+            rawTaskNames.add(tasksCleansedNameToRawNameMap.get(cleansedName));
+         }
+
+         return rawTaskNames;
+      }
    }
 
    public static class TasksSectionFragment extends ListFragment {
       public static final String TASK_NAMES = "task_names";
+      public static final String TASK_RAW_NAMES = "task_raw_names";
       public static final String TASK_TYPE = "task_type";
       public static final String TASK_TYPE_DESC = "task_type_desc";
 
       private List<String> taskNames = Lists.newArrayList();
+      private List<String> taskRawNames = Lists.newArrayList();
       private String taskType = null;
       private String taskTypeDesc = null;
 
@@ -227,8 +249,9 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
          View rootView = inflater.inflate(R.layout.fragment_task_names, container, false);
 
          this.taskType = getArguments().getString(TasksSectionFragment.TASK_TYPE);
-         this.taskNames = getArguments().getStringArrayList(TasksSectionFragment.TASK_NAMES);
          this.taskTypeDesc = getArguments().getString(TasksSectionFragment.TASK_TYPE_DESC);
+         this.taskNames = getArguments().getStringArrayList(TasksSectionFragment.TASK_NAMES);
+         this.taskRawNames = getArguments().getStringArrayList(TasksSectionFragment.TASK_RAW_NAMES);
          //         List<Map<String, String>> taskNamesListForAdapter = Lists.newArrayList();
          //         for (String taskName : taskNames) {
          //            Map<String, String> entry = Maps.newHashMap();
@@ -250,11 +273,13 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
       @Override
       public void onListItemClick(ListView l, View v, int position, long id) {
          String taskName = this.taskNames.get(position);
+         String taskRawName = this.taskRawNames.get(position);
 
          Intent intent = new Intent(getActivity(), ShowTaskDetailsActivity.class);
          intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE, taskType);
-         intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
          intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
+         intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
+         intent.putExtra(ShowTasksActivity.SELECTED_TASK_RAW_NAME, taskRawName);
          startActivity(intent);
       }
    }
