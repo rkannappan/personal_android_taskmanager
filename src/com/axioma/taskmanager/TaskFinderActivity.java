@@ -39,18 +39,6 @@ public class TaskFinderActivity extends Activity implements OnSharedPreferenceCh
    public final static String SELECTED_RISKMODEL = "com.axioma.taskfinder.selected_riskmodel";
    public final static String SELECTED_TASK_NAME = "com.axioma.taskfinder.selected_task_name";
 
-   public final static String HOST_NAME = "host_name";
-   public final static String PORT_NUMBER = "port_number";
-   public final static String WS_CONTEXT = "ws_context";
-   public final static String APP_USER_NAME = "app_user_name";
-   public final static String APP_USER_PASSWORD = "app_user_password";
-
-   public final static String DEFAULT_HOST_NAME = "http://localhost";
-   public final static String DEFAULT_PORT_NUMBER = "8080";
-   public final static String DEFAULT_WS_CONTEXT = "axioma-websrv";
-   public final static String DEFAULT_APP_USER_NAME = "axioma";
-   public final static String DEFAULT_APP_USER_PASSWORD = "axioma";
-
    private boolean preferencesChanged = false;
 
    private final Map<String, String> dataElementsCleansedNameToRawNameMap = Maps.newHashMap();
