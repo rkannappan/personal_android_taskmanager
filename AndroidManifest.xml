@@ -32,6 +32,10 @@
             android:label="@string/task_details" >
         </activity>
         <activity
+            android:name="com.axioma.taskmanager.PlotResultsActivity"
+            android:label="@string/results" >
+        </activity>
+        <activity
             android:name="com.axioma.taskmanager.AppSettingsActivity"
             android:label="@string/action_settings" > 
         </activity>

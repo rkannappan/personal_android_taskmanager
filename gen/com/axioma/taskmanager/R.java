@@ -27,25 +27,27 @@ public final class R {
         public static final int axioma_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int FindTasks=0x7f0a000a;
-        public static final int action_run=0x7f0a000b;
-        public static final int action_settings=0x7f0a000c;
-        public static final int benchmarkSpinner=0x7f0a0007;
-        public static final int ownerSpinner=0x7f0a0005;
-        public static final int pager=0x7f0a0001;
-        public static final int pager_title_strip=0x7f0a0002;
-        public static final int portfolioSpinner=0x7f0a0006;
-        public static final int riskmodelSpinner=0x7f0a0008;
-        public static final int taskDetails=0x7f0a0000;
-        public static final int taskNameText=0x7f0a0009;
-        public static final int taskTypeSpinner=0x7f0a0004;
-        public static final int titleText=0x7f0a0003;
+        public static final int FindTasks=0x7f0a000b;
+        public static final int action_run=0x7f0a000c;
+        public static final int action_settings=0x7f0a000d;
+        public static final int benchmarkSpinner=0x7f0a0008;
+        public static final int layout=0x7f0a0000;
+        public static final int ownerSpinner=0x7f0a0006;
+        public static final int pager=0x7f0a0002;
+        public static final int pager_title_strip=0x7f0a0003;
+        public static final int portfolioSpinner=0x7f0a0007;
+        public static final int riskmodelSpinner=0x7f0a0009;
+        public static final int taskDetails=0x7f0a0001;
+        public static final int taskNameText=0x7f0a000a;
+        public static final int taskTypeSpinner=0x7f0a0005;
+        public static final int titleText=0x7f0a0004;
     }
     public static final class layout {
-        public static final int activity_show_task_details=0x7f030000;
-        public static final int activity_show_tasks=0x7f030001;
-        public static final int activity_task_finder=0x7f030002;
-        public static final int fragment_task_names=0x7f030003;
+        public static final int activity_plot_results=0x7f030000;
+        public static final int activity_show_task_details=0x7f030001;
+        public static final int activity_show_tasks=0x7f030002;
+        public static final int activity_task_finder=0x7f030003;
+        public static final int fragment_task_names=0x7f030004;
     }
     public static final class menu {
         public static final int show_task_details=0x7f090000;
@@ -73,6 +75,7 @@ public final class R {
         public static final int ra_tasks=0x7f060010;
         public static final int rbpa_tasks=0x7f060012;
         public static final int report_tasks=0x7f060013;
+        public static final int results=0x7f06001c;
         public static final int riskmodel=0x7f060007;
         public static final int rmm_tasks=0x7f060014;
         public static final int run=0x7f06001b;

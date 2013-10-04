@@ -29,6 +29,7 @@
     <string name="classif_import_tasks">Classification Data Import Tasks</string>
     <string name="task_details">Task Details</string>
     <string name="run">Run</string>
+    <string name="results">Results</string>
     
 	<string-array name="task_type_array">
 	    <item>Any Task Type</item>
