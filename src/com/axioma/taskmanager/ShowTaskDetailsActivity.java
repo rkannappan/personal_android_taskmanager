@@ -40,6 +40,11 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
 
    private Map<String, String> paramNameToDisplayNameMap;
 
+   public final static String SELECTED_TASK_TYPE = "com.axioma.showtaskdetailsactivity.selected_task_type";
+   public final static String SELECTED_TASK_NAME = "com.axioma.showtaskdetailsactivity.selected_task_name";
+   public final static String SELECTED_TASK_TYPE_DESC = "com.axioma.showtaskdetailsactivity.selected_task_type_desc";
+   public final static String SELECTED_TASK_RAW_NAME = "com.axioma.showtaskdetailsactivity.selected_task_raw_name";
+
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -149,6 +154,11 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
          // notification is selected
 
          Intent intent = new Intent(ShowTaskDetailsActivity.this, PlotResultsActivity.class);
+         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_TYPE, taskType);
+         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_NAME, taskName);
+         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
+         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_RAW_NAME, taskRawName);
+
          PendingIntent pIntent = PendingIntent.getActivity(ShowTaskDetailsActivity.this, 0, intent, 0);
 
          // Build notification
