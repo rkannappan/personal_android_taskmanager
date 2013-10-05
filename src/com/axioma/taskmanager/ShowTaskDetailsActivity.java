@@ -40,11 +40,6 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
 
    private Map<String, String> paramNameToDisplayNameMap;
 
-   public final static String SELECTED_TASK_TYPE = "com.axioma.showtaskdetailsactivity.selected_task_type";
-   public final static String SELECTED_TASK_NAME = "com.axioma.showtaskdetailsactivity.selected_task_name";
-   public final static String SELECTED_TASK_TYPE_DESC = "com.axioma.showtaskdetailsactivity.selected_task_type_desc";
-   public final static String SELECTED_TASK_RAW_NAME = "com.axioma.showtaskdetailsactivity.selected_task_raw_name";
-
    @Override
    public void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -86,6 +81,14 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
             new RunTaskInBackground(ShowTaskDetailsActivity.this, this.taskName, this.taskRawName, this.taskType,
                      this.taskTypeDesc,
                      new RunTaskCallback()).execute();
+            return true;
+         case R.id.action_result:
+            Intent intent = new Intent(ShowTaskDetailsActivity.this, PlotResultsActivity.class);
+            intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE, taskType);
+            intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
+            intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
+            intent.putExtra(ShowTasksActivity.SELECTED_TASK_RAW_NAME, taskRawName);
+            startActivity(intent);
             return true;
          default:
             return super.onOptionsItemSelected(item);
@@ -141,7 +144,7 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
 
       @Override
       public void postProcessing(String results) {
-         Toast.makeText(ShowTaskDetailsActivity.this, "Task finished with status " + results, Toast.LENGTH_SHORT).show();
+         Toast.makeText(ShowTaskDetailsActivity.this, "Task finished with status " + results, Toast.LENGTH_LONG).show();
 
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             this.showNotification(results);
@@ -154,17 +157,17 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
          // notification is selected
 
          Intent intent = new Intent(ShowTaskDetailsActivity.this, PlotResultsActivity.class);
-         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_TYPE, taskType);
-         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_NAME, taskName);
-         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
-         intent.putExtra(ShowTaskDetailsActivity.SELECTED_TASK_RAW_NAME, taskRawName);
+         intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE, taskType);
+         intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
+         intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
+         intent.putExtra(ShowTasksActivity.SELECTED_TASK_RAW_NAME, taskRawName);
 
          PendingIntent pIntent = PendingIntent.getActivity(ShowTaskDetailsActivity.this, 0, intent, 0);
 
          // Build notification
          Notification noti =
                   new Notification.Builder(ShowTaskDetailsActivity.this)
-                           .setContentTitle(taskTypeDesc + " task " + taskName + " finished with status " + results)
+                           .setContentTitle(taskName + " finished with status " + results)
                            .setContentText(results).setSmallIcon(R.drawable.axioma_launcher).setContentIntent(pIntent).build();
 
          NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

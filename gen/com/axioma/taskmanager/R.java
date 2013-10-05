@@ -28,8 +28,9 @@ public final class R {
     }
     public static final class id {
         public static final int FindTasks=0x7f0a000b;
+        public static final int action_result=0x7f0a000d;
         public static final int action_run=0x7f0a000c;
-        public static final int action_settings=0x7f0a000d;
+        public static final int action_settings=0x7f0a000e;
         public static final int benchmarkSpinner=0x7f0a0008;
         public static final int layout=0x7f0a0000;
         public static final int ownerSpinner=0x7f0a0006;

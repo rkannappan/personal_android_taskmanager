@@ -11,9 +11,11 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.axioma.taskmanager.async.AsyncCallback;
 import com.axioma.taskmanager.async.GetTaskResultsInBackground;
@@ -55,33 +57,45 @@ public class PlotResultsActivity extends Activity implements AsyncCallback {
       System.out.println("raw name in intent " + taskRawName);
       System.out.println("type desc in intent " + taskTypeDesc);
 
-      new GetTaskResultsInBackground(PlotResultsActivity.this, taskName, taskRawName, taskType, taskTypeDesc, this).execute();
+      if (taskType.equals("RISK_ANALYSIS")) {
+         new GetTaskResultsInBackground(PlotResultsActivity.this, taskName, taskRawName, taskType, taskTypeDesc, this).execute();
+      } else {
+         this.showUnsupported();
+      }
    }
 
    @Override
    public void postProcessing(String results) {
-      Map<Long, Double> activeRiskMap = this.getActiveRiskMap(results);
-      GraphViewData[] data = new GraphViewData[activeRiskMap.size()];
+      String chartTitle = "";
+
+      Map<Long, Double> resultsMap = Maps.newHashMap();
+      if (taskType.equals("RISK_ANALYSIS")) {
+         resultsMap = this.getActiveRiskMap(results);
+         chartTitle = "Active Risk Time Series Plot for " + this.taskName;
+      }
+
+      GraphViewData[] data = new GraphViewData[resultsMap.size()];
       int i = 0;
-      for (Entry<Long, Double> entry : activeRiskMap.entrySet()) {
+      for (Entry<Long, Double> entry : resultsMap.entrySet()) {
          data[i++] = new GraphViewData(entry.getKey(), entry.getValue());
       }
 
       GraphViewSeries series = new GraphViewSeries(data);
 
-      final java.text.DateFormat dateTimeFormatter = DateFormat.getTimeFormat(this);
-      GraphView graphView = new LineGraphView(this, "Active Risk Time Series Plot for " + this.taskName) {
+      final java.text.DateFormat dateFormatter = DateFormat.getDateFormat(this);
+      GraphView graphView = new LineGraphView(this, chartTitle) {
          @Override
          protected String formatLabel(double value, boolean isValueX) {
             if (isValueX) {
-               // transform number to time
-               return dateTimeFormatter.format(new Date((long) value));
+               // transform number to date
+               return dateFormatter.format(new Date((long) value));
             } else {
                return super.formatLabel(value, isValueX);
             }
          }
       };
       graphView.addSeries(series);
+      graphView.setBackgroundColor(Color.BLACK);
 
       LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
       layout.addView(graphView);
@@ -118,17 +132,23 @@ public class PlotResultsActivity extends Activity implements AsyncCallback {
          Iterator it = apvObj.keys();
          while (it.hasNext()) {
             String date = (String) it.next();
-            String value = (String) apvObj.get(date);
+            Double value = apvObj.getDouble(date);
 
             LocalDate ldate = new LocalDate(date);
-            Double dvalue = Double.valueOf(value);
 
-            resultsMap.put(ldate, dvalue);
+            resultsMap.put(ldate, value);
          }
       } catch (JSONException ex) {
          ex.printStackTrace();
       }
       
       return resultsMap;
+   }
+
+   private void showUnsupported() {
+      LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
+      TextView tv = new TextView(PlotResultsActivity.this);
+      tv.setText("Results are not supported for task type " + this.taskTypeDesc);
+      layout.addView(tv);
    }
 }
