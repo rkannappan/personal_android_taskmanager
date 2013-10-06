@@ -52,16 +52,17 @@ public class PlotResultsActivity extends Activity implements AsyncCallback {
       this.taskTypeDesc = taskTypeDesc;
       this.taskName = taskName;
 
+      System.out.println("In plot results activity...");
       System.out.println("type in intent " + taskType);
       System.out.println("name in intent " + taskName);
       System.out.println("raw name in intent " + taskRawName);
       System.out.println("type desc in intent " + taskTypeDesc);
 
-      if (taskType.equals("RISK_ANALYSIS")) {
+      if ("RISK_ANALYSIS".equals(taskType)) {
          List<String> statistics = Lists.newArrayList("Active Predicted Variance", "Reference Value");
          new GetTaskResultsInBackground(PlotResultsActivity.this, taskName, taskRawName, taskType, taskTypeDesc, statistics, this)
                   .execute();
-      } else if (taskType.equals("PERFORMANCE_ATTRIBUTION_FACTOR")) {
+      } else if ("PERFORMANCE_ATTRIBUTION_FACTOR".equals(taskType)) {
          List<String> statistics = Lists.newArrayList("totalActiveReturns", "Reference Value");
          new GetTaskResultsInBackground(PlotResultsActivity.this, taskName, taskRawName, taskType, taskTypeDesc, statistics, this).execute();
       } else {
