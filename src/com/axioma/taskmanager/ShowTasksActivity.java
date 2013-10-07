@@ -214,7 +214,7 @@ public class ShowTasksActivity extends FragmentActivity implements AsyncCallback
                         this.taskTypeToNameMap.get("IMPORT_COMPOSITE_DATA"));
             case 9:
                return new Pair<String, Collection<String>>("IMPORT_CLASSIFICATION_DATA",
-                        this.taskTypeToNameMap.get("IMPORT_CLASSIFIATION_DATA"));
+                        this.taskTypeToNameMap.get("IMPORT_CLASSIFICATION_DATA"));
          }
 
          return null;

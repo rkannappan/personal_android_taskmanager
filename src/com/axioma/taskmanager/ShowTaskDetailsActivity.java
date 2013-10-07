@@ -153,22 +153,22 @@ public class ShowTaskDetailsActivity extends Activity implements AsyncCallback {
 
       @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
       private void showNotification(final String results) {
-         // Prepare intent which is triggered if the
-         // notification is selected
-
-         Intent intent = new Intent(ShowTaskDetailsActivity.this, PlotResultsActivity.class);
-         intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE, taskType);
-         intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
-         intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
-         intent.putExtra(ShowTasksActivity.SELECTED_TASK_RAW_NAME, taskRawName);
-
-         PendingIntent pIntent = PendingIntent.getActivity(ShowTaskDetailsActivity.this, 0, intent, 0);
+//         // Prepare intent which is triggered if the
+//         // notification is selected
+//
+//         Intent intent = new Intent(ShowTaskDetailsActivity.this, PlotResultsActivity.class);
+//         intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE, taskType);
+//         intent.putExtra(ShowTasksActivity.SELECTED_TASK_NAME, taskName);
+//         intent.putExtra(ShowTasksActivity.SELECTED_TASK_TYPE_DESC, taskTypeDesc);
+//         intent.putExtra(ShowTasksActivity.SELECTED_TASK_RAW_NAME, taskRawName);
+//
+//         PendingIntent pIntent = PendingIntent.getActivity(ShowTaskDetailsActivity.this, 0, intent, 0);
 
          // Build notification
          Notification noti =
                   new Notification.Builder(ShowTaskDetailsActivity.this)
                            .setContentTitle(taskName + " finished with status " + results)
-                           .setContentText(results).setSmallIcon(R.drawable.axioma_launcher).setContentIntent(pIntent).build();
+                           .setContentText(results).setSmallIcon(R.drawable.axioma_launcher).build();
 
          NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
